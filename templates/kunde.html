@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <title>KYC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+</head>
+
+<body>
+    <h3>Hei, fremtidige kunde. Velkommen til ditt lån.</h3>
+    {% if invalid_file %}
+    <div class="result" style="width: 800px;">{{ invalid_file }} </div>
+    <div class="result" style="width: 800px;">{{ supported_files }} </div>
+    {% endif %}
+    <form class="customer_loan" method="post" enctype="multipart/form-data" >
+        <input type="text" name="fullname" placeholder="Fullt navn" required />
+        <input type="text" name="ssn" placeholder="Fødselsnummer" required />
+        <input type="text" name="Address" placeholder="Adresse" required />
+
+        <div>
+            <input type="checkbox" id="PEP" name="PEP" value="yes">
+            <label for="PEP"> Jeg er en politisk eksponsert person</label>
+            <a href="https://no.wikipedia.org/wiki/Politisk_eksponert_person" target=”_blank”>
+                <img src="static/question.png" height="18em">
+            </a>
+        </div>
+        
+        <span></span>
+
+        <div>
+            <label for="ID_upload">Last opp indentifikasjon</label>
+            <input type="file" id="ID_upload" name="file" value="Upload" accept=".jpg, .jpeg, .png, .pdf" required/>
+        </div>
+        <!-- LEFT OFF HERE: GOING TO CREATE A NICER-LOOKING UPLOAD BUTTON -->
+        
+        <input type="submit" value="Søk om lån"/>
+    </form>
+</body>
