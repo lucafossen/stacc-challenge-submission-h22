@@ -22,34 +22,48 @@ def kunde():
 
     if request.method == "POST":
         can_submit = False
-        is_PEP = False
         
         now = datetime.now()
         full_name = request.form["fullname"]
         # secure the file name here so that image and json entry have the same name
-        aplctn_key = secure_filename(f"{full_name}:{now}")
+        aplctn_key = secure_filename(f"{full_name}-{now}")
 
         # Check if the post request has the file part
         if "file" not in request.files:
             print("No file part")
         else:
-            aplctn_id_img = request.files["file"]
-            extension = aplctn_id_img.filename.split(".")[-1] # Get the characters after the last dot
-            if aplctn_id_img and extension.lower() in ALLOWED_EXTENSIONS:
-                aplctn_id_img.save(f"application_imgs/{aplctn_key}.{extension}")
+            id_file = request.files["file"]
+            # Get the file extension (the characters after the last dot)
+            extension = id_file.filename.split(".")[-1]
+            
+            # Check if ID file is in a valid format
+            if id_file and extension.lower() in ALLOWED_EXTENSIONS:
+                id_file.save(f"application_imgs/{aplctn_key}.{extension}")
                 can_submit = True
             else:
                 print("File not allowed")
 
+        # Submit the application if format is valid
         if can_submit:
-            print("can submit")
+            application = dict(request.form)
+
             # Politically exposed person (PEP) check
+
             PEP_result = PEP_lookup(full_name)
-            if is_PEP or PEP_result["numberOfHits"] > 0:
-                is_PEP = True
-                PEP_save_json(aplctn_key, PEP_result, now)
-            return render_template("kunde_success.html", PEP=f"PEP hits: {PEP_result['numberOfHits']}")
-            
+            application['PEP_lookup_result'] = PEP_result
+
+            # Construct feedback messages about PEP for user
+            PEP_msg = ""
+            PEP_funny_msg = ""
+            if request.form.get("PEP_self_flag") == "yes":
+                PEP_msg = f"""Merk: Du har flagget deg selv som en politisk eksponert person, og blir sendt til manuell behandling."""
+            elif PEP_result["numberOfHits"] > 0:
+                PEP_funny_msg = f"""Du er en liten luring, du! Selv om du prøvde å slippe unna, fant vi navnet ditt i {PEP_result['numberOfHits']} databaser. Du blir sendt til manuell behandling."""
+
+            save_loan_application(aplctn_key, application)
+            return render_template("kunde_success.html", PEP_msg=PEP_msg, PEP_funny_msg=PEP_funny_msg)
+        
+        # Can not submit
         else:
             print("can not submit")
             return render_template("kunde.html",
@@ -66,19 +80,15 @@ def ansatt():
 
 def PEP_lookup(name):
     """Uses Stacc's API to get information on politically exposed persons (PEPs).
-    returns a tuple of the searched name, along with the API response.
-
-    If a PEP is detected, their info will get saved to data/politically_exposed_people.json.
-    TODO: hashing of info for better security 
+    simply returns the API response.
     """
 
     response = json.loads(requests.get(f"https://code-challenge.stacc.dev/api/pep?name={name}").content)
     return response
 
-# Decided to separate this from PEP_lookup in order to separate fruitful and non-fruitful functionality
-def PEP_save_json(name, response, time_recorded):
-    """Saves the result of a PEP lookup to file"""
-    path = "data/politically_exposed_people.json"
+def save_loan_application(name, data):
+    """Saves the result of a loan application to file"""
+    path = "data/loan_applications.json"
     with open(path) as file:
         f = file.read()
         if len(f) < 1:
@@ -86,7 +96,8 @@ def PEP_save_json(name, response, time_recorded):
         else:
             pep = json.loads(f)
     with open(path, "w") as file:
-        # PEP entries are stored as keys of format "searched name:current time"
-        # Example: "Knut Arild Hareide:2022-09-17 14:44:02.361926"
-        pep[f"{name}:{time_recorded}"] = response
+        # applications are stored with keys of format "full name-current time".
+        # Example: "Knut_Arild_Hareide-2022-09-18_155259.308949"
+        # This is also the format used for image files names, so that images and applications can be associated with each other.
+        pep[name] = data
         json.dump(pep, file)

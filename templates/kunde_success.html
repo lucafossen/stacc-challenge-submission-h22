@@ -8,8 +8,11 @@
     <h3>Boom! Suksess!</h3>
     <p>Søknaden din har blitt mottatt.</p>
     <!-- TODO: add message if person has been flagged as PEP -->
-    {% if PEP %}
-    <p> {{ PEP_msg }} </p>
+    {% if PEP_msg %}
+    <p class="PEP_warning"><b> {{ PEP_msg }} </b></p>
+    {% endif %}
+    {% if PEP_funny_msg %}
+    <p class="PEP_warning"><b> {{ PEP_funny_msg }} </b></p>
     {% endif %}
     <div style="cursor: pointer;" onclick="window.location='/';">
         <input type="submit" class="input_as_button" value="Yay! Ta meg tilbake."/>
