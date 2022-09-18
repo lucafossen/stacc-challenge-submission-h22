@@ -13,24 +13,25 @@
     <form class="customer_loan" method="post" enctype="multipart/form-data" >
         <input type="text" name="fullname" placeholder="Fullt navn" required />
         <input type="text" name="ssn" placeholder="Fødselsnummer" required />
-        <input type="text" name="Address" placeholder="Adresse" required />
-
+        <input type="text" name="address" placeholder="Adresse" required />
+        <span></span>
         <div>
             <input type="checkbox" id="PEP" name="PEP_self_flag" value="yes">
             <label for="PEP"> Jeg er en politisk eksponsert person</label>
             <a href="https://no.wikipedia.org/wiki/Politisk_eksponert_person" target=”_blank”>
-                <img src="static/question.png" height="24em">
+                <img src="static/question.png" height="24em" title="Hva er en politisk eksponert person?">
             </a>
         </div>
-        
+
         <span></span>
 
         <div>
-            <label for="ID_upload">Last opp indentifikasjon</label>
             <input type="file" id="ID_upload" name="file" value="Upload" accept=".jpg, .jpeg, .png, .pdf" required/>
+            <br>
+            <label for="ID_upload">Last opp indentifikasjon</label>
         </div>
-        <!-- LEFT OFF HERE: GOING TO CREATE A NICER-LOOKING UPLOAD BUTTON -->
-        
+        <!-- TODO: CREATE A NICER-LOOKING UPLOAD BUTTON -->
+        <input type="text" name="loan_amt" placeholder="Hvor mange kroner søker du om ?" required />
         <input type="submit" value="Søk om lån"/>
     </form>
 </body>
