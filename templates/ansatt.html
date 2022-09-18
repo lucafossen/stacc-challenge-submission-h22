@@ -2,13 +2,44 @@
 <head>
     <title>KYC</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='ansatt.css') }}" />
 </head>
 
 <body>
-    <h3>Ansatt!</h3>
-    <form class="buttons">
-        <input type="submit" value="Kunde" formaction="kunde" />
-        <br>
-        <input type="submit" value="Ansatt" formaction="ansatt" />
-    </div>
+    <h3>Hei, felles ansatt!</h3>
+    <p>Her er søknadene du ba om.</p>
+    <span></span>
+    <span></span>
+
+    <div id="applications"></div>
+    <script>
+        function add_application(appl) {
+
+        }
+        /* get the application data from Flask */
+        const applData = {{ appl_data|tojson }};
+        var applications = document.getElementById("applications");
+        // Create divs for each application
+        for (var key in applData) {
+            const name = document.createElement("p");
+            const nameNode = document.createTextNode(applData[key]["fullname"]);
+            const time = document.createElement("p");
+            const timeNode = document.createTextNode("Tid: " + applData[key]["time"].split(".")[0]);
+            const hits = document.createElement("p");
+            const hitsNode = document.createTextNode("PEP-treff: " + applData[key]["PEP_lookup_result"]["numberOfHits"]);
+
+            name.appendChild(nameNode);
+            time.appendChild(timeNode);
+            hits.appendChild(hitsNode);
+
+            // TODO: render more information in a good way, also images
+
+            var application = document.createElement("div");
+            application.setAttribute("class", "application")
+            application.appendChild(name);
+            application.appendChild(time);
+            application.appendChild(hits);
+            applications.appendChild(application);
+        }
+    </script>
 </body>

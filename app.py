@@ -1,4 +1,3 @@
-from tkinter import ALL
 from flask import Flask, render_template, request
 import requests
 import json
@@ -18,7 +17,10 @@ ALLOWED_EXTENSIONS = ("jpg", "jpeg", "png", "pdf")
 
 @app.route("/kunde", methods=("GET", "POST"))
 def kunde():
-    """returns HTML template for the customer view"""
+    """returns HTML template for the customer view.
+    Does some form validation, although this can be extended.
+    Perhaps also done client-side?
+    """
 
     if request.method == "POST":
         can_submit = False
@@ -46,11 +48,10 @@ def kunde():
         # Submit the application if format is valid
         if can_submit:
             application = dict(request.form)
-
+            application["time"] = str(datetime.now())
             # Politically exposed person (PEP) check
-
             PEP_result = PEP_lookup(full_name)
-            application['PEP_lookup_result'] = PEP_result
+            application["PEP_lookup_result"] = PEP_result
 
             # Construct feedback messages about PEP for user
             PEP_msg = ""
@@ -70,12 +71,21 @@ def kunde():
             invalid_file=f"Beklager! Vi tillater ikke .{extension} filer.",
             supported_files=f"For øyeblikket støtter vi kun: {', '.join(ALLOWED_EXTENSIONS)}")
 
-    return render_template("kunde.html")
+    else:
+        return render_template("kunde.html")
 
 @app.route("/ansatt")
 def ansatt():
     """returns HTML template for the employee view"""
-    return render_template("ansatt.html")
+    path = "data/loan_applications.json"
+    # Loan application data is sent along, so that JavaScript can handle it
+    with open(path) as file:
+        f = file.read()
+        if len(f) < 1:
+            applications = {}
+        else:
+            applications = json.loads(f)
+    return render_template("ansatt.html", appl_data=applications)
 
 
 def PEP_lookup(name):
@@ -92,12 +102,12 @@ def save_loan_application(name, data):
     with open(path) as file:
         f = file.read()
         if len(f) < 1:
-            pep = {} # start with an empty dict/object if file is empty
+            applications = {} # start with an empty dict/object if file is empty
         else:
-            pep = json.loads(f)
+            applications = json.loads(f)
     with open(path, "w") as file:
         # applications are stored with keys of format "full name-current time".
         # Example: "Knut_Arild_Hareide-2022-09-18_155259.308949"
         # This is also the format used for image files names, so that images and applications can be associated with each other.
-        pep[name] = data
-        json.dump(pep, file)
+        applications[name] = data
+        json.dump(applications, file)

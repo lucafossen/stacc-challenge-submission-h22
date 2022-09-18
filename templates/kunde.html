@@ -2,6 +2,7 @@
 <head>
     <title>KYC</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='kunde.css') }}" />
 </head>
 
 <body>
@@ -31,7 +32,7 @@
             <label for="ID_upload">Last opp indentifikasjon</label>
         </div>
         <!-- TODO: CREATE A NICER-LOOKING UPLOAD BUTTON -->
-        <input type="text" name="loan_amt" placeholder="Hvor mange kroner søker du om ?" required />
+        <input type="text" name="loan_amt" placeholder="Hvor mange kroner søker du om?" required />
         <input type="submit" value="Søk om lån"/>
     </form>
 </body>

@@ -1,0 +1,21 @@
+#ID_upload {
+    margin-top: auto;
+}
+
+
+.PEP_warning {
+    margin-bottom: 3px;
+}
+
+.customer_loan {
+    display: flex;
+    flex-direction: column;
+    padding-top: 15px;
+    width: 30vw;
+}
+
+.result {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+}

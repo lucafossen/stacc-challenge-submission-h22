@@ -32,8 +32,9 @@ body {
   background-size: cover;
 }
 
-.icon {
-  width: 34px;
+p {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 h3 {
@@ -41,18 +42,7 @@ h3 {
   line-height: 2.0em;
   font-weight: bold;
   color: #202123;
-  margin: 0px 0 2px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-}
-
-::placeholder {
-  color: #8e8ea0;
-  opacity: 1;
+  margin: 0px 0 0px;
 }
 
 span {
@@ -95,10 +85,14 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
-.result {
-  text-align: center;
-  font-weight: bold;
-  margin-top: 10px;
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.icon {
+  width: 34px;
 }
 
 .buttons {
@@ -108,17 +102,7 @@ input[type="checkbox"] {
   width: 30vw;
 }
 
-.customer_loan {
-  display: flex;
-  flex-direction: column;
-  padding-top: 15px;
-  width: 30vw;
-}
-
-.PEP_warning {
-  margin-bottom: 3px;
-}
-
-#ID_upload {
-  margin-top: auto;
+::placeholder {
+  color: #8e8ea0;
+  opacity: 1;
 }
