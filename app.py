@@ -22,7 +22,7 @@ def kunde():
 
     if request.method == "POST":
         can_submit = False
-        
+
         now = datetime.now()
         full_name = request.form["fullname"]
         # secure the file name here so that image and json entry have the same name
@@ -35,10 +35,10 @@ def kunde():
             id_file = request.files["file"]
             # Get the file extension (the characters after the last dot)
             extension = id_file.filename.split(".")[-1]
-            
+
             # Check if ID file is in a valid format
             if id_file and extension.lower() in ALLOWED_EXTENSIONS:
-                id_file.save(f"application_imgs/{aplctn_key}.{extension}")
+                id_file.save(f"data/application_imgs/{aplctn_key}.{extension}")
                 can_submit = True
             else:
                 print("File not allowed")
@@ -62,14 +62,14 @@ def kunde():
 
             save_loan_application(aplctn_key, application)
             return render_template("kunde_success.html", PEP_msg=PEP_msg, PEP_funny_msg=PEP_funny_msg)
-        
+
         # Can not submit
         else:
             print("can not submit")
             return render_template("kunde.html",
             invalid_file=f"Beklager! Vi tillater ikke .{extension} filer.",
             supported_files=f"For øyeblikket støtter vi kun: {', '.join(ALLOWED_EXTENSIONS)}")
-            
+
     return render_template("kunde.html")
 
 @app.route("/ansatt")
