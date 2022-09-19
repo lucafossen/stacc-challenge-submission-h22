@@ -3,9 +3,9 @@ import requests
 import json
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from uuid import uuid4 as uuid
 
 app = Flask(__name__)
-# app.secret_key = "q#¤G%&2#BV¤5#¤5"
 
 @app.route("/", methods=("GET", "POST"))
 def index():
@@ -23,32 +23,52 @@ def kunde():
     """
 
     if request.method == "POST":
-        can_submit = False
-
-        now = datetime.now()
-        full_name = request.form["fullname"]
-        # secure the file name here so that image and json entry have the same name
-        aplctn_key = secure_filename(f"{full_name}-{now}")
-
+        submit_errors = []
         # Check if the post request has the file part
-        if "file" not in request.files:
-            print("No file part")
+        id_file = request.files["file"]
+        # Get the file extension (the characters after the last dot)
+        extension = id_file.filename.split(".")[-1].lower()
+        error_msgs = {
+            "invalid_name": (
+                "Feil! Du må skrive hele navnet ditt, korten!",
+                "(Denne feilen kom opp siden du ikke hadde mellomrom i navnet ditt.)"
+            ),
+            "invalid_img": (
+                f"Beklager, kjære fil-connoisseur! Vi tillater ikke .{extension} filer.",
+                f"For øyeblikket støtter vi kun: {', '.join(ALLOWED_EXTENSIONS)}"
+            ),
+            "invalid_ssn": (
+                "Beklager! Vi støtter bare undekupple fødselnummer!",
+                "( altså av lengde 11 )"
+            )
+        }
+        # secure the file name here so that image and json entry have the same name
+        aplctn_key = str(uuid())
+        full_name = request.form["fullname"].strip()
+
+
+        # Check if name contains spaces (we (generally) don't want a single name!)
+        if not " " in full_name:
+            submit_errors.append(error_msgs["invalid_name"])
+
+        # Check if ssn has 11 characters (standard for Norwegian)
+        if len(request.form["ssn"]) != 11:
+            submit_errors.append(error_msgs["invalid_ssn"])
+
+        # Check if ID file is in a valid format
+        if id_file and extension in ALLOWED_EXTENSIONS:
+            id_file.save(f"static/application_imgs/{aplctn_key}.{extension}")
         else:
-            id_file = request.files["file"]
-            # Get the file extension (the characters after the last dot)
-            extension = id_file.filename.split(".")[-1]
+            submit_errors.append(error_msgs["invalid_img"])
 
-            # Check if ID file is in a valid format
-            if id_file and extension.lower() in ALLOWED_EXTENSIONS:
-                id_file.save(f"data/application_imgs/{aplctn_key}.{extension}")
-                can_submit = True
-            else:
-                print("File not allowed")
+        # Submit the application if form is valid
+        if len(submit_errors) == 0:
 
-        # Submit the application if format is valid
-        if can_submit:
             application = dict(request.form)
+            application["full_name"] = full_name
             application["time"] = str(datetime.now())
+            application["image_name"] = f"{aplctn_key}.{extension}"
+            application["loan_amt"] = to_monetary_format(application["loan_amt"]) # convert to sexy money number format
             # Politically exposed person (PEP) check
             PEP_result = PEP_lookup(full_name)
             application["PEP_lookup_result"] = PEP_result
@@ -59,17 +79,16 @@ def kunde():
             if request.form.get("PEP_self_flag") == "yes":
                 PEP_msg = f"""Merk: Du har flagget deg selv som en politisk eksponert person, og blir sendt til manuell behandling."""
             elif PEP_result["numberOfHits"] > 0:
-                PEP_funny_msg = f"""Du er en liten luring, du! Selv om du prøvde å slippe unna, fant vi navnet ditt i {PEP_result['numberOfHits']} databaser. Du blir sendt til manuell behandling."""
+                PEP_funny_msg = f"""Du er en liten luring, du! Selv om du prøvde å slippe unna, fikk vi {PEP_result['numberOfHits']} treff på deg i våre datasett. Du blir sendt til manuell behandling."""
 
             save_loan_application(aplctn_key, application)
             return render_template("kunde_success.html", PEP_msg=PEP_msg, PEP_funny_msg=PEP_funny_msg)
 
         # Can not submit
         else:
-            print("can not submit")
             return render_template("kunde.html",
-            invalid_file=f"Beklager! Vi tillater ikke .{extension} filer.",
-            supported_files=f"For øyeblikket støtter vi kun: {', '.join(ALLOWED_EXTENSIONS)}")
+            submit_errors=submit_errors,
+            form_so_far=request.form)
 
     else:
         return render_template("kunde.html")
@@ -111,3 +130,13 @@ def save_loan_application(name, data):
         # This is also the format used for image files names, so that images and applications can be associated with each other.
         applications[name] = data
         json.dump(applications, file)
+
+# Convert boring non-money-looking numbers to fun money-looking numbers!
+def to_monetary_format(number):
+    exp = []
+    for i, c in enumerate(reversed(number)):
+        if i % 3 == 0:
+            exp.append(' ')
+        exp.append(c)
+
+    return ''.join(reversed(exp))[0:-1]

@@ -19,3 +19,7 @@ Hei! Jeg har laget en web-app som lar brukere sende inn søknader om lån. En sj
 ## Kommentarer
 Jeg var ganske usikker på hvor mye jeg kom til å klare på en helg! Jeg er uerfaren med web-utvikling, så det har vært mye prøving og feiling.
 Jeg har holdt på med appen en stund nå, og har fortsatt lyst å lage en side for en "Ansatt", som kan se de ulike søknadene som har kommet inn og godta/avslå dem. Men det blir om jeg får nok tid!
+
+De rare fargene er jo ikke nødvendigvis bank-aktig, men jeg hadde lyst å sette min egen rare vri på siden. Den skal jo tross alt ikke brukes av kunder!
+
+Jeg fant nylig ut at [Flask støtter form-validering](https://flask-wtf.readthedocs.io/en/1.0.x/), så i fremtiden hadde jeg nok brukt dette

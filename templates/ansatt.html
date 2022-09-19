@@ -12,34 +12,17 @@
     <span></span>
 
     <div id="applications"></div>
-    <script>
-        function add_application(appl) {
-
-        }
-        /* get the application data from Flask */
-        const applData = {{ appl_data|tojson }};
-        var applications = document.getElementById("applications");
-        // Create divs for each application
-        for (var key in applData) {
-            const name = document.createElement("p");
-            const nameNode = document.createTextNode(applData[key]["fullname"]);
-            const time = document.createElement("p");
-            const timeNode = document.createTextNode("Tid: " + applData[key]["time"].split(".")[0]);
-            const hits = document.createElement("p");
-            const hitsNode = document.createTextNode("PEP-treff: " + applData[key]["PEP_lookup_result"]["numberOfHits"]);
-
-            name.appendChild(nameNode);
-            time.appendChild(timeNode);
-            hits.appendChild(hitsNode);
-
-            // TODO: render more information in a good way, also images
-
-            var application = document.createElement("div");
-            application.setAttribute("class", "application")
-            application.appendChild(name);
-            application.appendChild(time);
-            application.appendChild(hits);
-            applications.appendChild(application);
-        }
-    </script>
+        {% for key, val in appl_data.items() -%}
+        <div class="application">
+            <img src="static/application_imgs/{{ val.image_name }}" width="60%" height="60%">
+            <div style="margin-left: 20px">
+                <h3 style="font-size: 1.2em;"><b>{{val.fullname}}</b></h3>
+                <p style="line-height: 1.4em; margin: 0.4em 0;">Fødselsnummer: <b>{{val.ssn}}</b></p>
+                <p>Tid: <b>{{val.time.split(".")[0]}}</b></p>
+                <p>Søkemengde: <b>{{ val.loan_amt }} kr</b></p>
+                <p>PEP-treff: <b>{{val.PEP_lookup_result.numberOfHits}}</b></p>
+            </div>
+        </div>
+        <span></span>
+        {% endfor %}
 </body>

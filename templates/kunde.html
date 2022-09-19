@@ -7,19 +7,28 @@
 
 <body>
     <h3>Hei, fremtidige kunde. Velkommen til ditt lån.</h3>
-    {% if invalid_file %}
-    <div class="result" style="width: 800px;">{{ invalid_file }} </div>
-    <div class="result" style="width: 800px;">{{ supported_files }} </div>
+    {% if submit_errors %}
+    {% for error in submit_errors -%}
+    <div class="result" style="width: 800px; line-height: 1.2em;">
+        {{ error[0] }}
+        <br>
+        <i style="font-size: 0.7em; color: rgba(0, 0, 0, 0.5);">{{ error[1] }} </i>
+    </div>
+    {% endfor %}
     {% endif %}
     <form class="customer_loan" method="post" enctype="multipart/form-data" >
-        <input type="text" name="fullname" placeholder="Fullt navn" required />
-        <input type="text" name="ssn" placeholder="Fødselsnummer" required />
-        <input type="text" name="address" placeholder="Adresse" required />
+        <input type="text" name="fullname" placeholder="Fullt navn" required value="{{ form_so_far.fullname if form_so_far }}" />
+        <input type="number" name="ssn" placeholder="Fødselsnummer" required value="{{ form_so_far.ssn if form_so_far }}" />
+        <input type="text" name="address" placeholder="Adresse" required value="{{ form_so_far.address if form_so_far }}" />
         <span></span>
         <div>
+            {% if form_so_far and form_so_far.PEP_self_flag %}
+            <input type="checkbox" id="PEP" name="PEP_self_flag" value="yes" checked="true">
+            {% else %}
             <input type="checkbox" id="PEP" name="PEP_self_flag" value="yes">
+            {% endif %}
             <label for="PEP"> Jeg er en politisk eksponsert person</label>
-            <a href="https://no.wikipedia.org/wiki/Politisk_eksponert_person" target=”_blank”>
+            <a href="https://www.finanstilsynet.no/nyhetsarkiv/rundskriv/2019/Veiledning-til-etterlevelse-av-hvitvaskingsregelverket-i-eiendomsmeglingsvirksomhet/#10%C2%A0%20Forsterkede%20kundetiltak%20%E2%80%93%20politisk%20eksponerte%20personer%20(PEP)" target=”_blank”>
                 <img src="static/question.png" height="24em" title="Hva er en politisk eksponert person?">
             </a>
         </div>
@@ -32,7 +41,7 @@
             <label for="ID_upload">Last opp indentifikasjon</label>
         </div>
         <!-- TODO: CREATE A NICER-LOOKING UPLOAD BUTTON -->
-        <input type="text" name="loan_amt" placeholder="Hvor mange kroner søker du om?" required />
+        <input type="number" name="loan_amt" placeholder="Hvor mange kroner søker du om?" required value="{{ form_so_far.loan_amt if form_so_far }}"/>
         <input type="submit" value="Søk om lån"/>
     </form>
 </body>

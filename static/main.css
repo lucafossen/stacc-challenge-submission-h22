@@ -58,7 +58,7 @@ input[type="submit"], .input_as_button {
   width: 30vw;
   padding: 12px 0;
   color: #fff;
-  background: linear-gradient(to bottom right, #33ccff -10%, #ff99cc 100%);;
+  background: linear-gradient(to bottom right, #33ccff -10%, #ff99cc 100%);
   border: none;
   border-radius: 4px;
   text-align: center;
@@ -105,4 +105,17 @@ input[type="checkbox"] {
 ::placeholder {
   color: #8e8ea0;
   opacity: 1;
+}
+
+/* Remove arrows from number input */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
