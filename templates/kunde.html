@@ -6,6 +6,9 @@
 </head>
 
 <body>
+    <div style="position:absolute; right: 85%;" onclick="window.location='/';">
+        <input id="back_button" type="submit" class="button_style" value="Tilbake" style="align-self:flex-start;"/>
+    </div>
     <h3>Hei, fremtidige kunde. Velkommen til ditt lån.</h3>
     {% if submit_errors %}
     {% for error in submit_errors -%}
@@ -42,6 +45,7 @@
         </div>
         <!-- TODO: CREATE A NICER-LOOKING UPLOAD BUTTON -->
         <input type="number" name="loan_amt" placeholder="Hvor mange kroner søker du om?" required value="{{ form_so_far.loan_amt if form_so_far }}"/>
+        <span></span>
         <input type="submit" value="Søk om lån"/>
     </form>
 </body>
